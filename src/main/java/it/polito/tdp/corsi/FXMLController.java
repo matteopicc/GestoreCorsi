@@ -5,8 +5,14 @@
 package it.polito.tdp.corsi;
 
 import java.net.URL;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
+import it.polito.tdp.corsi.model.Corso;
+import it.polito.tdp.corsi.model.Divisione;
 import it.polito.tdp.corsi.model.Model;
+import it.polito.tdp.corsi.model.Studente;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -46,21 +52,97 @@ public class FXMLController {
 
     @FXML
     void corsiPerPeriodo(ActionEvent event) {
+    	txtRisultato.clear();//pulizia dell'area risultato all'inizio di una nuova azione
+    	String periodo = txtPeriodo.getText();//salvataggio del periodo preso in imput
+    	int periodoNumerico;
     	
+    	//Controllo tipo di dato inserito, se non intero blocca
+    	try {
+    		periodoNumerico = Integer.parseInt(periodo);
+    	}catch(NumberFormatException e) {
+    		txtRisultato.setText("Inserire un valore numerico al periodo");
+    		return;
+    	}
+    	
+    	//Controllo validità intero inserito, se non 1 o 2 blocca 
+    	if(periodoNumerico<1 || periodoNumerico>2) {
+    		txtRisultato.setText("Inserire un valore numerico ammissimbile(1 o 2)");
+    		return;
+    	}
+    	
+    	List<Corso>corsi = this.model.getCorsiByPeriodo(periodoNumerico);
+    	
+    	for(Corso c : corsi) {
+    		txtRisultato.appendText(c+"\n");
+    	}
+  
     }
 
     @FXML
     void numeroStudenti(ActionEvent event) {
+    	txtRisultato.clear();//pulizia dell'area risultato all'inizio di una nuova azione
+    	String periodo = txtPeriodo.getText();//salvataggio del periodo preso in imput
+    	int periodoNumerico;
     	
+    	//Controllo tipo di dato inserito, se non intero blocca
+    	try {
+    		periodoNumerico = Integer.parseInt(periodo);
+    	}catch(NumberFormatException e) {
+    		txtRisultato.setText("Inserire un valore numerico al periodo");
+    		return;
+    	}
+    	
+    	//Controllo validità intero inserito, se non 1 o 2 blocca 
+    	if(periodoNumerico <1 || periodoNumerico>2) {
+    		txtRisultato.setText("Inserire un valore numerico ammissimbile(1 o 2)");
+    		return;
+    	}
+    	
+    	Map<Corso,Integer>iscritti = this.model.getIscritti(periodoNumerico);
+    	
+    	for(Corso c:iscritti.keySet()) {
+    		txtRisultato.appendText(c+" "+iscritti.get(c)+"\n");	
+    	}
     }
 
     @FXML
     void stampaDivisione(ActionEvent event) {
+    	txtRisultato.clear();
+    	String codins = txtCorso.getText();
+    	//Controllo di aver inseritoun corso
+    	if(codins == null || codins.equals("")) {
+    		txtRisultato.appendText("Inserire il codice di un corso");
+    		return;
+    	}
+    	// TODO Controllo che il corso inserito esista
+    	
+    	//ALGORITMO IN CASO DI ORDINAMENTO
+    	List<Divisione>risultato = this.model.getDivisioneStudenti(codins);
+    	Collections.sort(risultato);
+    	
+    	for(Divisione d: risultato) {
+    		txtRisultato.appendText(d.getCDS()+" "+d.getN()+"\n");
+    	}
+    	
+    	
 
     }
 
     @FXML
     void stampaStudenti(ActionEvent event) {
+    	txtRisultato.clear();
+    	String codins = txtCorso.getText();
+    	//Controllo di aver inseritoun corso
+    	if(codins == null || codins.equals("")) {
+    		txtRisultato.appendText("Inserire il codice di un corso");
+    		return;
+    	}
+    	// TODO Controllo che il corso inserito esista
+    	
+    	for(Studente s : this.model.getStudentiByCorso(codins)) {
+    		txtRisultato.appendText(s+"\n");
+    	}
+    	
 
     }
 
